@@ -5,10 +5,12 @@ function App() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
   const getWeather = async () => {
+    setLoading(true);
     try {
       setError("");
 
@@ -19,6 +21,7 @@ function App() {
       setWeather(response.data);
     } catch (err) {
       if (err.response) {
+        setLoading(false);
         setError(err.response.data.message);
       } else {
         setError("Something went wrong");
@@ -26,6 +29,7 @@ function App() {
 
       setWeather(null);
     }
+    setLoading(false);
   };
 
   return (
@@ -37,11 +41,15 @@ function App() {
 
         <div className="flex gap-3">
           <input
-            type="text"
-            placeholder="Enter city..."
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="flex-1 px-4 py-3 rounded-xl bg-white/20 text-white placeholder:text-gray-300 outline-none border border-white/20"
+  type="text"
+  placeholder="Enter city..."
+  value={city}
+  onChange={(e) => setCity(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      getWeather();
+    }
+  }}
           />
 
           <button
